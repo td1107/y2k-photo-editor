@@ -524,67 +524,6 @@ function applyOlympicDramatic() {
 }
 
 // ==========================================
-// ระบบ Slider ปรับความสว่าง (รวมการทำงานทับกับฟิลเตอร์)
-// ==========================================
-let currentFilterFunc = applyNormal; 
-
-const brightnessSlider = document.getElementById('brightnessSlider');
-const brightnessValue = document.getElementById('brightnessValue');
-
-function renderFilter() {
-    if (!originalImage) return;
-
-    // รันฟิลเตอร์ที่เลือกไว้ก่อน เพื่อให้ภาพเซ็ตกลับเป็นตั้งต้นของโทนนั้นๆ
-    currentFilterFunc();
-
-    // ดึงค่าสว่างจาก Slider (ถ้าไม่มีใน HTML ให้ข้ามไป)
-    if (!brightnessSlider || !brightnessValue) return;
-    
-    let bValue = parseInt(brightnessSlider.value);
-    brightnessValue.innerText = bValue > 0 ? "+" + bValue : bValue;
-
-    if (bValue === 0) return; 
-
-    // ปรับความสว่างทับลงไป
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    for (let i = 0; i < data.length; i += 4) {
-        data[i] = Math.min(255, Math.max(0, data[i] + bValue));     
-        data[i+1] = Math.min(255, Math.max(0, data[i+1] + bValue)); 
-        data[i+2] = Math.min(255, Math.max(0, data[i+2] + bValue)); 
-    }
-    ctx.putImageData(imageData, 0, 0);
-}
-
-if (brightnessSlider) {
-    brightnessSlider.addEventListener('input', renderFilter);
-}
-
-// ==========================================
-// ส่วนผูกปุ่มทั้งหมด (รวบยอดให้สั้นลงและฉลาดขึ้น)
-// ==========================================
-const buttons = document.querySelectorAll('.filter-btn');
-
-function setActiveButton(clickedBtn) {
-    if(!buttons) return;
-    buttons.forEach(btn => btn.classList.remove('active'));
-    if(clickedBtn) clickedBtn.classList.add('active');
-}
-
-// ฟังก์ชันสำหรับผูกปุ่มเข้ากับฟิลเตอร์
-function bindFilter(btnId, filterFunc) {
-    const btn = document.getElementById(btnId);
-    if (btn) {
-        btn.addEventListener('click', () => {
-            currentFilterFunc = filterFunc; 
-            if (brightnessSlider) brightnessSlider.value = 0;     
-            renderFilter();                 
-            setActiveButton(btn);           
-        });
-    }
-}
-
-// ==========================================
 // คอลเลกชันจำลองฟิล์มของจริง (Real Film Stocks)
 // ==========================================
 
@@ -713,6 +652,69 @@ function applyIlfordPan() {
     ctx.putImageData(imageData, 0, 0);
 }
 
+// ==========================================
+// ระบบ Slider ปรับความสว่าง (รวมการทำงานทับกับฟิลเตอร์)
+// ==========================================
+let currentFilterFunc = applyNormal; 
+
+const brightnessSlider = document.getElementById('brightnessSlider');
+const brightnessValue = document.getElementById('brightnessValue');
+
+function renderFilter() {
+    if (!originalImage) return;
+
+    // รันฟิลเตอร์ที่เลือกไว้ก่อน เพื่อให้ภาพเซ็ตกลับเป็นตั้งต้นของโทนนั้นๆ
+    currentFilterFunc();
+
+    // ดึงค่าสว่างจาก Slider (ถ้าไม่มีใน HTML ให้ข้ามไป)
+    if (!brightnessSlider || !brightnessValue) return;
+    
+    let bValue = parseInt(brightnessSlider.value);
+    brightnessValue.innerText = bValue > 0 ? "+" + bValue : bValue;
+
+    if (bValue === 0) return; 
+
+    // ปรับความสว่างทับลงไป
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        data[i] = Math.min(255, Math.max(0, data[i] + bValue));     
+        data[i+1] = Math.min(255, Math.max(0, data[i+1] + bValue)); 
+        data[i+2] = Math.min(255, Math.max(0, data[i+2] + bValue)); 
+    }
+    ctx.putImageData(imageData, 0, 0);
+}
+
+if (brightnessSlider) {
+    brightnessSlider.addEventListener('input', renderFilter);
+}
+
+// ==========================================
+// ส่วนผูกปุ่มทั้งหมด (รวบยอดให้สั้นลงและฉลาดขึ้น)
+// ==========================================
+const buttons = document.querySelectorAll('.filter-btn');
+
+function setActiveButton(clickedBtn) {
+    if(!buttons) return;
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if(clickedBtn) clickedBtn.classList.add('active');
+}
+
+// ฟังก์ชันสำหรับผูกปุ่มเข้ากับฟิลเตอร์
+function bindFilter(btnId, filterFunc) {
+    const btn = document.getElementById(btnId);
+    if (btn) {
+        btn.addEventListener('click', () => {
+            currentFilterFunc = filterFunc; 
+            if (brightnessSlider) brightnessSlider.value = 0;     
+            renderFilter();                 
+            setActiveButton(btn);           
+        });
+    }
+}
+
+
+
 // ผูกปุ่มทั้งหมดที่เพิ่มมาตั้งแต่ต้นจนถึงล่าสุด
 bindFilter('btnNormal', applyNormal);
 bindFilter('btnCoverArt', applyCoverArt);
@@ -751,3 +753,4 @@ if(downloadBtn) {
     });
 
 }
+
