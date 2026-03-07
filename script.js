@@ -741,7 +741,12 @@ bindFilter('btnBlur', applyBlur);
 bindFilter('btnSnowMotion', applySnowMotion);
 bindFilter('btnGlacier', applyGlacierTone);
 bindFilter('btnOlympic', applyOlympicDramatic);
-
+bindFilter('btnColorPlus', applyColorPlus);
+bindFilter('btnUltramax', applyUltramax);
+bindFilter('btnFujiC200', applyFujiC200);
+bindFilter('btnPortra', applyPortra);
+bindFilter('btnLomo800', applyLomo800);
+bindFilter('btnIlford', applyIlfordPan);
 // ระบบดาวน์โหลด
 if(downloadBtn) {
     downloadBtn.addEventListener('click', function() {
@@ -753,4 +758,5 @@ if(downloadBtn) {
     });
 
 }
+
 
