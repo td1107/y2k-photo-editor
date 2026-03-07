@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER VOGUE | Y2K Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,800;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <div class="marquee-container">
+        <div class="marquee">
+            <span>* EXPERIMENTAL Y2K AESTHETIC * DIGITAL DARKROOM * HIGH FASHION EDITORIAL * AVANT-GARDE FILTERS * EST. 2026 * NO SWAG GAP *</span>
+            <span>* EXPERIMENTAL Y2K AESTHETIC * DIGITAL DARKROOM * HIGH FASHION EDITORIAL * AVANT-GARDE FILTERS * EST. 2026 * NO SWAG GAP *</span>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <header class="editorial-header">
+            <h1>CYBER VOGUE</h1>
+            <p>DIGITAL PHOTO LABORATORY // VERSION 2.0</p>
+        </header>
+
+        <div class="workspace">
+            <div class="canvas-panel">
+                <div class="canvas-wrapper">
+                    <div id="placeholder" class="placeholder">
+                        <span class="blink">[ INSERT IMAGE_ ]</span>
+                    </div>
+                    <canvas id="photoCanvas"></canvas>
+                </div>
+                
+                <div class="main-actions">
+                    <label class="btn-primary upload-btn">
+                        [+] UPLOAD FILE
+                        <input type="file" id="imageUpload" accept="image/*">
+                    </label>
+                    <button id="downloadBtn" class="btn-primary" disabled>DOWNLOAD_</button>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-header">
+                    
+                    <h2>// FILTER_BANK</h2>
+                    <button class="filter-btn active" id="btnNormal">ORIGINAL</button>
+                </div>
+
+
+
+                <div class="slider-container">
+                    <label for="brightnessSlider">► BRIGHTNESS: <span id="brightnessValue">0</span></label>
+                    <input type="range" id="brightnessSlider" min="-100" max="100" value="0">
+                </div>
+
+                <div class="filter-groups">
+
+                
+
+                <div class="filter-groups">
+                    <div class="filter-category">
+                        <h3>► MAGAZINE_COVERS</h3>
+                        <div class="filter-grid">
+                            <button class="filter-btn" id="btnCoverArt">Y2K COVER</button>
+                            <button class="filter-btn" id="btnTeenVogue">teenVOGUE</button>
+                            <button class="filter-btn" id="btnBazaar">BAZAAR</button>
+                            <button class="filter-btn" id="btnElle">ELLE</button>
+                            <button class="filter-btn" id="btnGq">GQ</button>
+                            <button class="filter-btn" id="btnDazed">DAZED</button>
+                            <button class="filter-btn" id="btnNylon">NYLON</button>
+                            <button class="filter-btn" id="btnVogue">VOGUE CLS.</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-category">
+                        <h3>► EXPERIMENTAL_Y2K</h3>
+                        <div class="filter-grid">
+                            <button class="filter-btn" id="btnCyber">CYBER NEON</button>
+                            <button class="filter-btn" id="btnVivid">VIVID STREET</button>
+                            <button class="filter-btn" id="btnMotion">MOTION EDIT</button>
+                            <button class="filter-btn" id="btnAvantGarde">AVANT-GARDE</button>
+                            <button class="filter-btn" id="btnDigicam">Y2K DIGICAM</button>
+                            <button class="filter-btn" id="btnAvantBlue">AVANT BLUE</button>
+                            <button class="filter-btn" id="btnStreetNature">STREET NATURE</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-category">
+                        <h3>► ANALOG_FILM</h3>
+                        <div class="filter-grid">
+                            <button class="filter-btn" id="btnDreamy90s">DREAMY 90S</button>
+                            <button class="filter-btn" id="btnBW">B&W 400</button>
+                            <button class="filter-btn" id="btnVintage">VINTAGE</button>
+                            <button class="filter-btn" id="btnCinematic">CINEMATIC</button>
+                            <button class="filter-btn" id="btnRetro">RETRO 80S</button>
+                            <button class="filter-btn" id="btnBlur">SOFT FOCUS</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-category">
+                        <h3>► SPORTS_ACTION</h3>
+                        <div class="filter-grid">
+                            <button class="filter-btn" id="btnSnowMotion">SNOW MOTION</button>
+                            <button class="filter-btn" id="btnGlacier">GLACIER TONE</button>
+                            <button class="filter-btn" id="btnOlympic">OLYMPIC DRAMA</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
