@@ -53,7 +53,25 @@
                 <div class="slider-container">
                     <label for="brightnessSlider">► BRIGHTNESS: <span id="brightnessValue">0</span></label>
                     <input type="range" id="brightnessSlider" min="-100" max="100" value="0">
+                    
+                    <label for="blurSlider">► SOFT BLUR: <span id="blurValue">0</span> px</label>
+                    <input type="range" id="blurSlider" min="0" max="20" value="0">
+                    
+                    <label for="grainSlider">► FILM GRAIN: <span id="grainValue">0</span> %</label>
+                    <input type="range" id="grainSlider" min="0" max="100" value="0">
                 </div>
+
+                <div class="filter-groups">
+                    <div class="filter-category">
+                        <h3>► HALFTONE_PRINT</h3>
+                        <div class="filter-grid" style="grid-template-columns: 1fr 1fr;">
+                            <button class="filter-btn" id="btnHalftoneBW">HALFTONE (B&W)</button>
+                            <div class="color-picker-wrapper">
+                                <button class="filter-btn" id="btnHalftoneColor" style="flex: 1;">HALFTONE (COLOR)</button>
+                                <input type="color" id="halftoneColorPicker" value="#00f0ff" title="เลือกสี Halftone">
+                            </div>
+                        </div>
+                    </div>
 
                 <div class="filter-groups">
 
@@ -128,4 +146,5 @@
 </body>
 
 </html>
+
 
