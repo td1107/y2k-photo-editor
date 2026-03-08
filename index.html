@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER VOGUE | Y2K Editor</title>
+    <title>CYBER VO | Y2K Editor</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,800;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <script src="script.js" defer></script>
+    <script type="module" src="js/app.js" defer></script>
 </head>
 <body>
 
@@ -19,7 +19,7 @@
 
     <div class="app-container">
         <header class="editorial-header">
-            <h1>CYBER VOGUE</h1>
+            <h1>CYBER VO</h1>
             <p>DIGITAL PHOTO LABORATORY // MADE BY THAD KUB</p>
         </header>
 
@@ -37,6 +37,9 @@
                         [+] UPLOAD FILE
                         <input type="file" id="imageUpload" accept="image/*">
                     </label>
+                    
+                    <button id="btnCompare" class="btn-primary" disabled>[O] COMPARE</button>
+                    
                     <button id="downloadBtn" class="btn-primary" disabled>DOWNLOAD_</button>
                 </div>
             </div>
@@ -59,6 +62,9 @@
                     
                     <label for="grainSlider">► FILM GRAIN: <span id="grainValue">0</span> %</label>
                     <input type="range" id="grainSlider" min="0" max="100" value="0">
+
+                    <label for="textureSlider">► DUST & SCRATCHES: <span id="textureValue">0</span> %</label>
+                    <input type="range" id="textureSlider" min="0" max="100" value="0">
                 </div>
 
                 <div class="filter-groups">
@@ -143,8 +149,11 @@
             </div>
         </div>
     </div>
+    <footer style="text-align: center; padding: 20px; color: #555; font-family: 'Space Mono', monospace; font-size: 0.8rem; border-top: 1px solid #333; margin-top: 40px;">
+    &copy; 2026 CYBER VO. All rights reserved.<br>
+    Created & Developed by [Thada Manpru]
+</footer>
 </body>
 
 </html>
-
 
