@@ -587,132 +587,243 @@ function bindFilter(btnId, filterFunc) {
 }
 
 // ==========================================
-// คอลเลกชันจำลองฟิล์มของจริง (Real Film Stocks)
+// ฟังก์ชันผู้ช่วย: สร้างกิมมิคกล้องฟิล์ม (Film Imperfections)
 // ==========================================
 
-// 1. Kodak ColorPlus 200 (สีโทนอุ่น คลาสสิก ติดเหลือง/แดง)
+// 1. ขอบมืดของเลนส์ (Organic Vignette)
+// ให้อารมณ์เหมือนเลนส์มือหมุนคลาสสิกตอนเปิดรูรับแสงกว้างสุด
+function applyVignette(intensity = 0.5) {
+    let gradient = ctx.createRadialGradient(
+        canvas.width / 2, canvas.height / 2, canvas.width * 0.4,
+        canvas.width / 2, canvas.height / 2, canvas.width * 0.8
+    );
+    gradient.addColorStop(0, 'rgba(0,0,0,0)');
+    gradient.addColorStop(1, `rgba(0,0,0,${intensity})`);
+    
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'source-over'; // คืนค่าเดิม
+}
+
+// 2. แสงรั่วสีส้มแดง (Light Leaks)
+// เหมือนฝาหลังกล้องปิดไม่สนิท แสงเลยแอบเลียแผ่นฟิล์ม
+function applyLightLeak() {
+    let gradient = ctx.createLinearGradient(0, 0, canvas.width * 0.4, canvas.height * 0.3);
+    gradient.addColorStop(0, 'rgba(255, 60, 0, 0.4)'); // สีส้มแดงจัดๆ
+    gradient.addColorStop(1, 'rgba(255, 60, 0, 0)');   // จางหายไป
+    
+    ctx.globalCompositeOperation = 'screen';
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = 'source-over';
+}
+
+// 3. วันที่มุมภาพ (Retro Date Stamp)
+// ฟอนต์ดิจิทัลสีส้มเจาะรู เอกลักษณ์กล้องคอมแพคยุค 90s
+function applyDateStamp() {
+    ctx.fillStyle = '#ff5722'; // สีส้มเรืองแสง
+    // ปรับขนาดฟอนต์ตามขนาดรูปภาพ
+    let fontSize = Math.max(20, canvas.width * 0.03); 
+    ctx.font = `bold ${fontSize}px "Courier New", monospace`;
+    
+    // ใส่เงาฟุ้งเรืองแสงให้ตัวหนังสือ
+    ctx.shadowColor = '#ff0000';
+    ctx.shadowBlur = 8;
+    
+    // พิมพ์วันที่สไตล์ยุค 90s (ปี เดือน วัน)
+    ctx.fillText("'98 10 23", canvas.width - (fontSize * 6.5), canvas.height - (fontSize * 1.5));
+    ctx.shadowBlur = 0; // ล้างค่าเงาออก
+}
+
+
+// ==========================================
+// คอลเลกชันจำลองฟิล์มของจริง (อัปเกรด 4 เทคนิคพิเศษ)
+// ==========================================
+
+// 1. Kodak ColorPlus 200 (+ Split Toning โทนอุ่น และวันที่)
 function applyColorPlus() {
     if (!originalImage) return;
     applyNormal();
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    let contrast = 15; 
-    let factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+    let factor = (259 * (15 + 255)) / (255 * (259 - 15));
+
     for (let i = 0; i < data.length; i += 4) {
         let r = data[i], g = data[i+1], b = data[i+2];
-        r = r * 1.1 + 15; // ดันแดงและเหลืองให้ดูอุ่น
-        g = g * 1.05 + 10;
-        b = b * 0.9 - 10; // ลดน้ำเงินลง
+        let lum = (r * 0.3) + (g * 0.59) + (b * 0.11);
+
+        // Split Toning: ส่วนเงามืดจะดันสีส้ม/แดงเข้าไป
+        if (lum < 128) {
+            r += (128 - lum) * 0.15;
+            g += (128 - lum) * 0.05;
+        }
+
+        r = r * 1.05 + 10; 
+        g = g * 1.02 + 5;
+        b = b * 0.95 - 5; 
+        
         data[i] = Math.min(255, Math.max(0, factor * (r - 128) + 128));
         data[i+1] = Math.min(255, Math.max(0, factor * (g - 128) + 128));
         data[i+2] = Math.min(255, Math.max(0, factor * (b - 128) + 128));
     }
     ctx.putImageData(imageData, 0, 0);
+    
+    // เพิ่มวันที่ที่มุมล่างขวา
+    applyDateStamp();
 }
 
-// 2. Kodak Ultramax 400 (สีสดใส คอนทราสต์ดี ถ่ายได้ทุกสถานการณ์)
+// 2. Kodak Ultramax 400 (+ Halation แสงส้มฟุ้ง และ ขอบมืด)
 function applyUltramax() {
     if (!originalImage) return;
     applyNormal();
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    let contrast = 25; 
-    let factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+    let factor = (259 * (25 + 255)) / (255 * (259 - 25));
+
     for (let i = 0; i < data.length; i += 4) {
         let r = data[i], g = data[i+1], b = data[i+2];
-        r = r * 1.15; // เร่งความสดใสของสี
-        g = g * 1.1;
-        b = b * 1.15; // ให้ท้องฟ้าสีฟ้าชัดเจน
-        
-        let noise = (Math.random() - 0.5) * 15; // เกรนบางๆ ISO 400
+        let lum = (r * 0.3) + (g * 0.59) + (b * 0.11);
+
+        // Halation Effect: แสงสว่างจ้าๆ จะมีสีแดงส้มบวมออกมา
+        if (lum > 200) {
+            r += (lum - 200) * 1.2; 
+        }
+
+        r *= 1.15; g *= 1.1; b *= 1.15; 
+        let noise = (Math.random() - 0.5) * 15;
         data[i] = Math.min(255, Math.max(0, factor * (r - 128) + 128 + noise));
         data[i+1] = Math.min(255, Math.max(0, factor * (g - 128) + 128 + noise));
         data[i+2] = Math.min(255, Math.max(0, factor * (b - 128) + 128 + noise));
     }
     ctx.putImageData(imageData, 0, 0);
+    
+    // ใส่ขอบมืดเบาๆ
+    applyVignette(0.35);
 }
 
-// 3. Fujifilm Fujicolor C200 (สีสด เขียวสวย อมฟ้านิดๆ สไตล์ฟูจิ)
+// 3. Fujifilm Fujicolor C200 (+ Split Toning เงาอมเขียวไซอัน และ แสงรั่ว)
 function applyFujiC200() {
     if (!originalImage) return;
     applyNormal();
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    let contrast = 20; 
-    let factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+    let factor = (259 * (20 + 255)) / (255 * (259 - 20));
+
     for (let i = 0; i < data.length; i += 4) {
         let r = data[i], g = data[i+1], b = data[i+2];
-        r = r * 0.95; // ดรอปแดงลงนิดหน่อย
-        g = g * 1.15 + 10; // ดันสีเขียวให้เด่น (เอกลักษณ์ของฟูจิ)
+        let lum = (r * 0.3) + (g * 0.59) + (b * 0.11);
+
+        // Split Toning: เอกลักษณ์ฟูจิ เงาต้องอมเขียวอมฟ้า (Cyan/Green)
+        if (lum < 128) {
+            g += (128 - lum) * 0.2;
+            b += (128 - lum) * 0.15;
+        }
+
+        r = r * 0.95; 
+        g = g * 1.10 + 5; 
         b = b * 1.05;
         data[i] = Math.min(255, Math.max(0, factor * (r - 128) + 128));
         data[i+1] = Math.min(255, Math.max(0, factor * (g - 128) + 128));
         data[i+2] = Math.min(255, Math.max(0, factor * (b - 128) + 128));
     }
     ctx.putImageData(imageData, 0, 0);
+    
+    // เพิ่มแสงรั่วสีส้มที่มุมซ้ายบน และขอบมืด
+    applyLightLeak();
+    applyVignette(0.4);
 }
 
-// 4. Kodak Portra 400 (นุ่มนวล คอนทราสต์ต่ำ สีผิว Portrait สวย)
+// 4. Kodak Portra 400 (+ Halation นุ่มๆ และผิวสุขภาพดี)
 function applyPortra() {
     if (!originalImage) return;
     applyNormal();
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    let contrast = 5; // คอนทราสต์ต่ำ ให้ภาพดูละมุน ไม่แข็ง
-    let factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+    let factor = (259 * (5 + 255)) / (255 * (259 - 5));
+
     for (let i = 0; i < data.length; i += 4) {
         let r = data[i], g = data[i+1], b = data[i+2];
-        r = r * 1.05 + 5; // อมชมพู/ส้ม สุขภาพดี
-        g = g * 1.02;
-        b = b * 0.95;
+        let lum = (r * 0.3) + (g * 0.59) + (b * 0.11);
+
+        // Halation แบบละมุนๆ สำหรับพอร์เทรต
+        if (lum > 210) {
+            r += (lum - 210) * 0.8;
+            g += (lum - 210) * 0.3; // อมส้มนิดๆ
+        }
+
+        // ดันความสว่างในส่วนมืด (Lifted Shadows) ให้ภาพซอฟต์
+        if (lum < 100) {
+            r += 10; g += 10; b += 10;
+        }
+
+        r = r * 1.05 + 5; g = g * 1.02; b = b * 0.95;
         data[i] = Math.min(255, Math.max(0, factor * (r - 128) + 128));
         data[i+1] = Math.min(255, Math.max(0, factor * (g - 128) + 128));
         data[i+2] = Math.min(255, Math.max(0, factor * (b - 128) + 128));
     }
     ctx.putImageData(imageData, 0, 0);
+    applyVignette(0.2); // ขอบมืดบางมากๆ
 }
 
-// 5. Lomography 800 (จัดจ้าน โทนภาพยนตร์ เกรนชัด)
+// 5. Lomography 800 (จัดเต็ม! แสงรั่วหนัก + ขอบมืดชัด + สีเพี้ยน)
 function applyLomo800() {
     if (!originalImage) return;
     applyNormal();
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    let contrast = 35; // คอนทราสต์ดุเดือดสไตล์ Cinematic
-    let factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+    let factor = (259 * (35 + 255)) / (255 * (259 - 35));
+
     for (let i = 0; i < data.length; i += 4) {
         let r = data[i], g = data[i+1], b = data[i+2];
-        r = r * 1.15;
-        g = g * 1.05;
-        b = b * 1.1; // ดันน้ำเงิน/แดง ให้มีกลิ่นอาย Magenta นิดๆ
         
-        let noise = (Math.random() - 0.5) * 25; // เกรนเม็ดใหญ่ ISO 800
+        // Color Shift (สีเพี้ยนแนว Magenta/Yellow)
+        r = r * 1.15;
+        g = g * 0.95; // ดรอปเขียวลง
+        b = b * 1.1; 
+        
+        let noise = (Math.random() - 0.5) * 30; // เกรนหยาบๆ
         data[i] = Math.min(255, Math.max(0, factor * (r - 128) + 128 + noise));
         data[i+1] = Math.min(255, Math.max(0, factor * (g - 128) + 128 + noise));
         data[i+2] = Math.min(255, Math.max(0, factor * (b - 128) + 128 + noise));
     }
     ctx.putImageData(imageData, 0, 0);
+
+    // ใส่ให้ครบสูตรความฮิปสเตอร์
+    applyLightLeak();
+    applyVignette(0.65);
 }
 
-// 6. Ilford Pan 400 (ขาวดำยอดนิยม คอนทราสต์จัด เกรนสวย)
+// 6. Ilford Pan 400 (+ ขาวดำ Split Tone อุ่นๆ และขอบมืดดุๆ)
 function applyIlfordPan() {
     if (!originalImage) return;
     applyNormal();
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    let contrast = 45; // คอนทราสต์หนักๆ ขาวเป็นขาว ดำเป็นดำ
-    let factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+    let factor = (259 * (45 + 255)) / (255 * (259 - 45));
+
     for (let i = 0; i < data.length; i += 4) {
         let r = data[i], g = data[i+1], b = data[i+2];
         let gray = (r * 0.3) + (g * 0.59) + (b * 0.11);
         gray = factor * (gray - 128) + 128;
         
-        let noise = (Math.random() - 0.5) * 20; // เกรนขาวดำ ISO 400
-        gray += noise;
+        let noise = (Math.random() - 0.5) * 20; 
         
-        data[i] = data[i+1] = data[i+2] = Math.min(255, Math.max(0, gray));
+        // Split Tone ขาวดำ: ให้เงามืดอมน้ำตาลอุ่นๆ (Sepia/Selenium) นิดๆ
+        let tintR = gray, tintG = gray, tintB = gray;
+        if (gray < 120) {
+            tintR += 5; // เติมแดง
+            tintB -= 5; // ลดน้ำเงิน
+        }
+        
+        data[i] = Math.min(255, Math.max(0, tintR + noise));
+        data[i+1] = Math.min(255, Math.max(0, tintG + noise));
+        data[i+2] = Math.min(255, Math.max(0, tintB + noise));
     }
     ctx.putImageData(imageData, 0, 0);
+    
+    // ขอบมืดขับให้ภาพขาวดำดูขลังขึ้น
+    applyVignette(0.7);
 }
 
 // ผูกปุ่มทั้งหมดที่เพิ่มมาตั้งแต่ต้นจนถึงล่าสุด
@@ -758,6 +869,7 @@ if(downloadBtn) {
     });
 
 }
+
 
 
 
