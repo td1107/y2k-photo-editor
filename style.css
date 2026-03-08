@@ -286,7 +286,6 @@ input[type=range]::-webkit-slider-thumb {
 input[type=range]::-webkit-slider-thumb:hover {
     background: #fff;
     border-color: var(--y2k-pink);
-
 }
 
 /* ---------------- Color Picker สำหรับ Halftone ---------------- */
@@ -320,3 +319,4 @@ input[type="color"]::-webkit-color-swatch {
 input[type="color"]:hover {
     border-color: var(--y2k-blue);
 }
+
