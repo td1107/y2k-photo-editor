@@ -286,4 +286,37 @@ input[type=range]::-webkit-slider-thumb {
 input[type=range]::-webkit-slider-thumb:hover {
     background: #fff;
     border-color: var(--y2k-pink);
+
+}
+
+/* ---------------- Color Picker สำหรับ Halftone ---------------- */
+.color-picker-wrapper {
+    display: flex;
+    gap: 5px;
+    align-items: stretch;
+}
+
+input[type="color"] {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 1px solid var(--border-color);
+    width: 45px;
+    height: 100%;
+    min-height: 40px;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px #000;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+}
+
+input[type="color"]:hover {
+    border-color: var(--y2k-blue);
 }
