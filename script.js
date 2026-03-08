@@ -524,119 +524,6 @@ function applyOlympicDramatic() {
 }
 
 
-
-// ==========================================
-// ระบบ Slider ปรับความสว่าง (รวมการทำงานทับกับฟิลเตอร์)
-// ==========================================
-let currentFilterFunc = applyNormal; 
-
-const brightnessSlider = document.getElementById('brightnessSlider');
-const brightnessValue = document.getElementById('brightnessValue');
-
-function renderFilter() {
-    if (!originalImage) return;
-
-    // รันฟิลเตอร์ที่เลือกไว้ก่อน เพื่อให้ภาพเซ็ตกลับเป็นตั้งต้นของโทนนั้นๆ
-    currentFilterFunc();
-
-    // ดึงค่าสว่างจาก Slider (ถ้าไม่มีใน HTML ให้ข้ามไป)
-    if (!brightnessSlider || !brightnessValue) return;
-    
-    let bValue = parseInt(brightnessSlider.value);
-    brightnessValue.innerText = bValue > 0 ? "+" + bValue : bValue;
-
-    if (bValue === 0) return; 
-
-    // ปรับความสว่างทับลงไป
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    for (let i = 0; i < data.length; i += 4) {
-        data[i] = Math.min(255, Math.max(0, data[i] + bValue));     
-        data[i+1] = Math.min(255, Math.max(0, data[i+1] + bValue)); 
-        data[i+2] = Math.min(255, Math.max(0, data[i+2] + bValue)); 
-    }
-    ctx.putImageData(imageData, 0, 0);
-}
-
-if (brightnessSlider) {
-    brightnessSlider.addEventListener('input', renderFilter);
-}
-
-// ==========================================
-// ส่วนผูกปุ่มทั้งหมด (รวบยอดให้สั้นลงและฉลาดขึ้น)
-// ==========================================
-const buttons = document.querySelectorAll('.filter-btn');
-
-function setActiveButton(clickedBtn) {
-    if(!buttons) return;
-    buttons.forEach(btn => btn.classList.remove('active'));
-    if(clickedBtn) clickedBtn.classList.add('active');
-}
-
-// ฟังก์ชันสำหรับผูกปุ่มเข้ากับฟิลเตอร์
-function bindFilter(btnId, filterFunc) {
-    const btn = document.getElementById(btnId);
-    if (btn) {
-        btn.addEventListener('click', () => {
-            currentFilterFunc = filterFunc; 
-            if (brightnessSlider) brightnessSlider.value = 0;     
-            renderFilter();                 
-            setActiveButton(btn);           
-        });
-    }
-}
-
-// ==========================================
-// ฟังก์ชันผู้ช่วย: สร้างกิมมิคกล้องฟิล์ม (Film Imperfections)
-// ==========================================
-
-// 1. ขอบมืดของเลนส์ (Organic Vignette)
-// ให้อารมณ์เหมือนเลนส์มือหมุนคลาสสิกตอนเปิดรูรับแสงกว้างสุด
-function applyVignette(intensity = 0.5) {
-    let gradient = ctx.createRadialGradient(
-        canvas.width / 2, canvas.height / 2, canvas.width * 0.4,
-        canvas.width / 2, canvas.height / 2, canvas.width * 0.8
-    );
-    gradient.addColorStop(0, 'rgba(0,0,0,0)');
-    gradient.addColorStop(1, `rgba(0,0,0,${intensity})`);
-    
-    ctx.globalCompositeOperation = 'multiply';
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.globalCompositeOperation = 'source-over'; // คืนค่าเดิม
-}
-
-// 2. แสงรั่วสีส้มแดง (Light Leaks)
-// เหมือนฝาหลังกล้องปิดไม่สนิท แสงเลยแอบเลียแผ่นฟิล์ม
-function applyLightLeak() {
-    let gradient = ctx.createLinearGradient(0, 0, canvas.width * 0.4, canvas.height * 0.3);
-    gradient.addColorStop(0, 'rgba(255, 60, 0, 0.4)'); // สีส้มแดงจัดๆ
-    gradient.addColorStop(1, 'rgba(255, 60, 0, 0)');   // จางหายไป
-    
-    ctx.globalCompositeOperation = 'screen';
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.globalCompositeOperation = 'source-over';
-}
-
-// 3. วันที่มุมภาพ (Retro Date Stamp)
-// ฟอนต์ดิจิทัลสีส้มเจาะรู เอกลักษณ์กล้องคอมแพคยุค 90s
-function applyDateStamp() {
-    ctx.fillStyle = '#ff5722'; // สีส้มเรืองแสง
-    // ปรับขนาดฟอนต์ตามขนาดรูปภาพ
-    let fontSize = Math.max(20, canvas.width * 0.03); 
-    ctx.font = `bold ${fontSize}px "Courier New", monospace`;
-    
-    // ใส่เงาฟุ้งเรืองแสงให้ตัวหนังสือ
-    ctx.shadowColor = '#ff0000';
-    ctx.shadowBlur = 8;
-    
-    // พิมพ์วันที่สไตล์ยุค 90s (ปี เดือน วัน)
-    ctx.fillText("'98 10 23", canvas.width - (fontSize * 6.5), canvas.height - (fontSize * 1.5));
-    ctx.shadowBlur = 0; // ล้างค่าเงาออก
-}
-
-
 // ==========================================
 // คอลเลกชันจำลองฟิล์มของจริง (อัปเกรด 4 เทคนิคพิเศษ)
 // ==========================================
@@ -826,7 +713,170 @@ function applyIlfordPan() {
     applyVignette(0.7);
 }
 
-// ผูกปุ่มทั้งหมดที่เพิ่มมาตั้งแต่ต้นจนถึงล่าสุด
+// ==========================================
+// เอฟเฟกต์ Halftone (จุดไข่ปลาแบบสื่อสิ่งพิมพ์)
+// ==========================================
+function applyHalftoneBW() {
+    renderHalftone('#000000'); // สีดำ
+}
+
+function applyHalftoneColor() {
+    const colorPicker = document.getElementById('halftoneColorPicker');
+    let dotColor = colorPicker ? colorPicker.value : '#00f0ff';
+    renderHalftone(dotColor);
+}
+
+function renderHalftone(dotColor) {
+    if (!originalImage) return;
+    applyNormal(); // วาดภาพต้นฉบับเพื่ออ่านค่าสีก่อน
+    
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    // เทสีพื้นหลังเป็นสีขาว
+    ctx.fillStyle = '#ffffff'; 
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = dotColor;
+
+    // คำนวณขนาดตารางให้สัมพันธ์กับขนาดรูป (ภาพใหญ่จุดใหญ่ ภาพเล็กจุดเล็ก)
+    const gridSize = Math.max(4, Math.floor(canvas.width / 150)); 
+    const maxRadius = gridSize * 0.7; // ยอมให้จุดซ้อนทับกันนิดๆ ในส่วนที่มืดมาก
+
+    // วนลูปวาดวงกลมทีละช่องตาราง
+    for (let y = 0; y < canvas.height; y += gridSize) {
+        for (let x = 0; x < canvas.width; x += gridSize) {
+            let i = (y * canvas.width + x) * 4;
+            let r = data[i], g = data[i+1], b = data[i+2];
+            let lum = (r * 0.3) + (g * 0.59) + (b * 0.11);
+            
+            // ยิ่งสีเข้ม (lum ต่ำ) รัศมีวงกลมยิ่งกว้าง
+            let radius = (1 - (lum / 255)) * maxRadius; 
+            
+            if (radius > 0.5) {
+                ctx.beginPath();
+                ctx.arc(x + gridSize/2, y + gridSize/2, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+    }
+}
+
+
+// ==========================================
+// ระบบ Render กราฟิกหลัก (ฟิลเตอร์ + Brightness + Blur + Grain)
+// ==========================================
+let currentFilterFunc = applyNormal; 
+
+const brightnessSlider = document.getElementById('brightnessSlider');
+const blurSlider = document.getElementById('blurSlider');
+const grainSlider = document.getElementById('grainSlider');
+
+const brightnessValue = document.getElementById('brightnessValue');
+const blurValue = document.getElementById('blurValue');
+const grainValue = document.getElementById('grainValue');
+
+// สร้าง Canvas จำลองไว้ในหน่วยความจำ (เพื่อใช้ทำ Blur ประสิทธิภาพสูง)
+let tempCanvas = document.createElement('canvas');
+let tempCtx = tempCanvas.getContext('2d');
+
+function renderFilter() {
+    if (!originalImage) return;
+
+    // 1. รันฟิลเตอร์ที่เลือกไว้ก่อนเสมอ (รวมถึง Halftone)
+    currentFilterFunc();
+
+    // 2. ดึงค่าจาก Slider ปัจจุบัน
+    let bValue = brightnessSlider ? parseInt(brightnessSlider.value) : 0;
+    let blurVal = blurSlider ? parseInt(blurSlider.value) : 0;
+    let gValue = grainSlider ? parseInt(grainSlider.value) : 0;
+
+    // อัปเดตตัวเลขบนหน้าจอ
+    if(brightnessValue) brightnessValue.innerText = bValue > 0 ? "+" + bValue : bValue;
+    if(blurValue) blurValue.innerText = blurVal;
+    if(grainValue) grainValue.innerText = gValue;
+
+    // 3. ปรับความสว่าง (Brightness) และ เม็ดเกรน (Grain)
+    if (bValue !== 0 || gValue > 0) {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+            let r = data[i] + bValue;
+            let g = data[i+1] + bValue;
+            let b = data[i+2] + bValue;
+
+            if (gValue > 0) {
+                // สุ่มเพิ่ม/ลดค่าสี ตามเปอร์เซ็นต์ของ Grain
+                let noise = (Math.random() - 0.5) * (gValue * 1.5);
+                r += noise; g += noise; b += noise;
+            }
+
+            data[i] = Math.min(255, Math.max(0, r));
+            data[i+1] = Math.min(255, Math.max(0, g));
+            data[i+2] = Math.min(255, Math.max(0, b));
+        }
+        ctx.putImageData(imageData, 0, 0);
+    }
+
+    // 4. ปรับความเบลอ (Blur) ทับลงไปเป็นชั้นสุดท้าย
+    if (blurVal > 0) {
+        if (tempCanvas.width !== canvas.width || tempCanvas.height !== canvas.height) {
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+        }
+        // ดูดภาพปัจจุบันไปเก็บไว้ใน Temp
+        tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+        tempCtx.drawImage(canvas, 0, 0);
+
+        // วาดกลับมาพร้อมใส่ Filter Blur
+        ctx.filter = `blur(${blurVal}px)`;
+        ctx.drawImage(tempCanvas, 0, 0);
+        ctx.filter = 'none'; // ล้างค่าทิ้งเพื่อไม่ให้กระทบรอบต่อไป
+    }
+}
+
+// ผูก Event ให้แถบเลื่อนและตัวเลือกสี เปลี่ยนแปลงภาพแบบ Real-time
+if (brightnessSlider) brightnessSlider.addEventListener('input', renderFilter);
+if (blurSlider) blurSlider.addEventListener('input', renderFilter);
+if (grainSlider) grainSlider.addEventListener('input', renderFilter);
+
+const halftoneColorPicker = document.getElementById('halftoneColorPicker');
+if (halftoneColorPicker) {
+    halftoneColorPicker.addEventListener('input', () => {
+        // อัปเดตภาพทันที ถ้าผู้ใช้กำลังใช้ฟิลเตอร์ Halftone Color อยู่
+        if (currentFilterFunc === applyHalftoneColor) renderFilter();
+    });
+}
+
+// ==========================================
+// ระบบจับคู่ปุ่ม (Bind Buttons)
+// ==========================================
+const buttons = document.querySelectorAll('.filter-btn');
+
+function setActiveButton(clickedBtn) {
+    if(!buttons) return;
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if(clickedBtn) clickedBtn.classList.add('active');
+}
+
+function bindFilter(btnId, filterFunc) {
+    const btn = document.getElementById(btnId);
+    if (btn) {
+        btn.addEventListener('click', () => {
+            currentFilterFunc = filterFunc; 
+            // รีเซ็ตเฉพาะแถบสี/สว่าง แต่เก็บค่าความเบลอและเกรนไว้ให้แต่งต่อได้สนุกๆ
+            if (brightnessSlider) brightnessSlider.value = 0;     
+            renderFilter();                 
+            setActiveButton(btn);           
+        });
+    }
+}
+
+// ผูกปุ่ม Halftone
+bindFilter('btnHalftoneBW', applyHalftoneBW);
+bindFilter('btnHalftoneColor', applyHalftoneColor);
+
+// ผูกปุ่มทั้งหมดที่เพิ่มมา (อย่าลืมใส่ให้ครบทุกชื่อปุ่มที่คุณมีใน HTML นะครับ)
 bindFilter('btnNormal', applyNormal);
 bindFilter('btnCoverArt', applyCoverArt);
 bindFilter('btnTeenVogue', applyTeenVogueCover);
@@ -852,12 +902,15 @@ bindFilter('btnBlur', applyBlur);
 bindFilter('btnSnowMotion', applySnowMotion);
 bindFilter('btnGlacier', applyGlacierTone);
 bindFilter('btnOlympic', applyOlympicDramatic);
+
+// ผูกปุ่มฟิล์มของจริง
 bindFilter('btnColorPlus', applyColorPlus);
 bindFilter('btnUltramax', applyUltramax);
 bindFilter('btnFujiC200', applyFujiC200);
 bindFilter('btnPortra', applyPortra);
 bindFilter('btnLomo800', applyLomo800);
 bindFilter('btnIlford', applyIlfordPan);
+
 // ระบบดาวน์โหลด
 if(downloadBtn) {
     downloadBtn.addEventListener('click', function() {
@@ -867,8 +920,8 @@ if(downloadBtn) {
         link.href = canvas.toDataURL('image/jpeg', 0.9);
         link.click();
     });
-
 }
+
 
 
 
