@@ -286,6 +286,7 @@ input[type=range]::-webkit-slider-thumb {
 input[type=range]::-webkit-slider-thumb:hover {
     background: #fff;
     border-color: var(--y2k-pink);
+
 }
 
 /* ---------------- Color Picker สำหรับ Halftone ---------------- */
@@ -320,3 +321,141 @@ input[type="color"]:hover {
     border-color: var(--y2k-blue);
 }
 
+/* =========================================
+   UI THEME: Y2K WHITE, SILVER CHROME & NEON GREEN
+   ========================================= */
+
+/* พื้นหลังหลัก (ดำสนิท ขับให้นีออนเขียวเด่นขึ้น) */
+body {
+    background-color: #050505;
+    color: #ffffff;
+}
+
+/* กรอบแอปพลิเคชัน (โลหะสีเงินสว่าง/ขาว) */
+.app-container {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 40%, #b0b0b0 80%, #888888 100%);
+    border: 3px solid #ffffff;
+    border-bottom-color: #666666;
+    border-right-color: #666666;
+    box-shadow: 0 0 35px rgba(57, 255, 20, 0.5); /* เงาเรืองแสงสีเขียวนีออน */
+    color: #000000; 
+}
+
+/* หัวข้อและโลโก้สีเขียวนีออน ตัดขอบดำให้ดูลอยขึ้นมาจากพื้นเงิน */
+h1, h2, h3, label {
+    color: #39ff14; /* รหัสสีเขียวนีออน (Matrix Green) */
+    text-shadow: 1px 1px 0px #000000, 0 0 12px rgba(57, 255, 20, 0.9); 
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* -----------------------------------------
+   ระบบ TABS (ปุ่มเลือกหมวดหมู่)
+   ----------------------------------------- */
+.y2k-tabs-container {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #39ff14; /* เส้นใต้สีเขียว */
+}
+
+.y2k-tab {
+    background: linear-gradient(to bottom, #f9f9f9, #cccccc);
+    color: #333333;
+    border: 2px solid #888888;
+    border-top-color: #ffffff;
+    border-left-color: #ffffff;
+    padding: 8px 15px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: inset 1px 1px 2px #ffffff;
+}
+
+.y2k-tab:hover {
+    background: #ffffff;
+    box-shadow: 0 0 10px #ffffff;
+}
+
+/* แท็บที่ถูกเลือก (Active) เรืองแสงสีเขียวนีออน */
+.y2k-tab.active {
+    background: #39ff14;
+    color: #000000; /* ใช้ตัวหนังสือสีดำเพื่อให้อ่านง่ายบนพื้นสีเขียวสว่าง */
+    border: 2px solid #ffffff;
+    border-bottom-color: #006600; /* สีเขียวเข้มสำหรับทำเงาขอบปุ่ม */
+    border-right-color: #006600;
+    box-shadow: 0 0 15px #39ff14, inset 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* -----------------------------------------
+   ปุ่มฟิลเตอร์และปุ่มหลัก (สไตล์โลหะสีเงินเงาวับ)
+   ----------------------------------------- */
+.filter-btn, .btn-primary {
+    background: linear-gradient(to bottom, #ffffff 0%, #dcdcdc 45%, #a9a9a9 100%);
+    color: #000000;
+    border: 2px solid #777777;
+    border-top-color: #ffffff;
+    border-left-color: #ffffff;
+    font-weight: bold;
+    box-shadow: inset 1px 1px 3px #ffffff, 2px 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+
+/* เวลากด หรือ เอาเมาส์วาง จะกลายเป็นสีเขียวอ่อนเรืองแสง */
+.filter-btn:hover, .btn-primary:hover {
+    background: #e6ffe6;
+    color: #008800;
+    border-color: #39ff14;
+    box-shadow: 0 0 12px rgba(57, 255, 20, 0.8);
+}
+
+/* ปุ่มฟิลเตอร์ที่กำลังใช้งานอยู่ (Active) */
+.filter-btn.active {
+    background: #39ff14;
+    color: #000000;
+    border: 2px solid #ffffff;
+    border-bottom-color: #004d00;
+    border-right-color: #004d00;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.5), 0 0 12px #39ff14;
+}
+
+/* -----------------------------------------
+   แถบเลื่อน Slider (สีนีออน)
+   ----------------------------------------- */
+input[type=range] {
+    accent-color: #39ff14;
+    cursor: pointer;
+}
+
+/* -----------------------------------------
+   แถบตัววิ่ง (Marquee) สีเขียว/ดำ
+   ----------------------------------------- */
+.marquee-container {
+    background: #39ff14;
+    color: #000000;
+    border-bottom: 2px solid #ffffff;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+    font-weight: bold;
+}
+
+/* -----------------------------------------
+   การซ่อน/แสดงเนื้อหาหมวดหมู่ (ระบบ Tabs)
+   ----------------------------------------- */
+.tab-content {
+    display: none; 
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.tab-content.active {
+    display: block; 
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
