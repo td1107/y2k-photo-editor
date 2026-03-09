@@ -12,7 +12,30 @@ initUpload();
 initSliders();
 initDownload();
 
+// ==========================================
+// ระบบ Y2K Tabs (สลับหมวดหมู่ฟิลเตอร์)
+// ==========================================
+const tabs = document.querySelectorAll('.y2k-tab');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        // 1. ล้างสถานะ Active ของปุ่มแท็บทั้งหมด
+        tabs.forEach(t => t.classList.remove('active'));
+        // 2. ซ่อนเนื้อหาทั้งหมด
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        // 3. ใส่สถานะ Active ให้ปุ่มที่เพิ่งคลิก
+        tab.classList.add('active');
+        // 4. แสดงเนื้อหาที่ตรงกับ data-tab ของปุ่มนั้น
+        const targetId = tab.getAttribute('data-tab');
+        document.getElementById(targetId).classList.add('active');
+    });
+});
+
+// ==========================================
 // ระบบปุ่ม Compare (ดู Before/After)
+// ==========================================
 if (btnCompare) {
     const displayCanvas = document.getElementById('photoCanvas');
     const ctx = displayCanvas.getContext('2d');
@@ -31,7 +54,9 @@ if (btnCompare) {
     btnCompare.addEventListener('touchend', hideOriginal);
 }
 
+// ==========================================
 // ระบบจับคู่ปุ่มฟิลเตอร์
+// ==========================================
 const buttons = document.querySelectorAll('.filter-btn');
 
 function setActiveButton(clickedBtn) {
@@ -51,7 +76,9 @@ function bindFilter(btnId, filterName) {
     }
 }
 
-// จับคู่ปุ่มทั้งหมด (ชื่อปุ่ม HTML -> ชื่อฟังก์ชันใน filters.js)
+// ------------------------------------------
+// ผูกปุ่มทั้งหมด (HTML id -> Function in filters.js)
+// ------------------------------------------
 bindFilter('btnNormal', 'applyNormal');
 bindFilter('btnHalftoneBW', 'applyHalftoneBW');
 bindFilter('btnHalftoneColor', 'applyHalftoneColor');
@@ -95,6 +122,12 @@ bindFilter('btnFujiC200', 'applyFujiC200');
 bindFilter('btnPortra', 'applyPortra');
 bindFilter('btnLomo800', 'applyLomo800');
 bindFilter('btnIlford', 'applyIlfordPan');
+
+// Glitch & Low Res
+bindFilter('btnLowQuality', 'applyLowQuality');
+bindFilter('btnAerochrome', 'applyAerochrome');
+bindFilter('btnCrt', 'applyCRT');
+bindFilter('btnDreamcore', 'applyDreamcore');
 
 // รีเซ็ตปุ่ม ORIGINAL ให้ Active เป็นค่าเริ่มต้นเมื่อโหลดเว็บ
 const btnNormal = document.getElementById('btnNormal');
