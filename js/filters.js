@@ -555,7 +555,6 @@ function renderHalftone(dotColor) {
 }
 
 export function applyHalftoneBW() { renderHalftone('#000000'); }
-
 export function applyHalftoneColor() { renderHalftone(halftoneColor); }
 
 // ==========================================
