@@ -46,12 +46,9 @@
 
             <div class="controls-panel">
                 <div class="control-header">
-                    
                     <h2>// FILTER_BANK</h2>
                     <button class="filter-btn active" id="btnNormal">ORIGINAL</button>
                 </div>
-
-
 
                 <div class="slider-container">
                     <label for="brightnessSlider">► BRIGHTNESS: <span id="brightnessValue">0</span></label>
@@ -67,93 +64,110 @@
                     <input type="range" id="textureSlider" min="0" max="100" value="0">
                 </div>
 
-                <div class="filter-groups">
-                    <div class="filter-category">
-                        <h3>► HALFTONE_PRINT</h3>
-                        <div class="filter-grid" style="grid-template-columns: 1fr 1fr;">
-                            <button class="filter-btn" id="btnHalftoneBW">HALFTONE (B&W)</button>
-                            <div class="color-picker-wrapper">
-                                <button class="filter-btn" id="btnHalftoneColor" style="flex: 1;">HALFTONE (COLOR)</button>
-                                <input type="color" id="halftoneColorPicker" value="#00f0ff" title="เลือกสี Halftone">
+                <div class="y2k-tabs-container">
+                    <button class="y2k-tab active" data-tab="tab-magazine">MAGAZINES</button>
+                    <button class="y2k-tab" data-tab="tab-y2k">Y2K & GLITCH</button>
+                    <button class="y2k-tab" data-tab="tab-film">FILM & ANALOG</button>
+                    <button class="y2k-tab" data-tab="tab-sports">SPORTS</button>
+                </div>
+
+                <div class="filter-groups-container">
+                    
+                    <div class="tab-content active" id="tab-magazine">
+                        <div class="filter-category">
+                            <h3>► MAGAZINE_COVERS</h3>
+                            <div class="filter-grid">
+                                <button class="filter-btn" id="btnCoverArt">Y2K COVER</button>
+                                <button class="filter-btn" id="btnTeenVogue">teenVOGUE</button>
+                                <button class="filter-btn" id="btnBazaar">BAZAAR</button>
+                                <button class="filter-btn" id="btnElle">ELLE</button>
+                                <button class="filter-btn" id="btnGq">GQ</button>
+                                <button class="filter-btn" id="btnDazed">DAZED</button>
+                                <button class="filter-btn" id="btnNylon">NYLON</button>
+                                <button class="filter-btn" id="btnVogue">VOGUE CLS.</button>
+                            </div>
+                        </div>
+                        <div class="filter-category">
+                            <h3>► HALFTONE_PRINT</h3>
+                            <div class="filter-grid" style="grid-template-columns: 1fr 1fr;">
+                                <button class="filter-btn" id="btnHalftoneBW">HALFTONE (B&W)</button>
+                                <div class="color-picker-wrapper">
+                                    <button class="filter-btn" id="btnHalftoneColor" style="flex: 1;">HALFTONE (COLOR)</button>
+                                    <input type="color" id="halftoneColorPicker" value="#00f0ff" title="เลือกสี Halftone">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                <div class="filter-groups">
-
-                
-
-                <div class="filter-groups">
-                    <div class="filter-category">
-                        <h3>► MAGAZINE_COVERS</h3>
-                        <div class="filter-grid">
-                            <button class="filter-btn" id="btnCoverArt">Y2K COVER</button>
-                            <button class="filter-btn" id="btnTeenVogue">teenVOGUE</button>
-                            <button class="filter-btn" id="btnBazaar">BAZAAR</button>
-                            <button class="filter-btn" id="btnElle">ELLE</button>
-                            <button class="filter-btn" id="btnGq">GQ</button>
-                            <button class="filter-btn" id="btnDazed">DAZED</button>
-                            <button class="filter-btn" id="btnNylon">NYLON</button>
-                            <button class="filter-btn" id="btnVogue">VOGUE CLS.</button>
+                    <div class="tab-content" id="tab-y2k">
+                        <div class="filter-category">
+                            <h3>► EXPERIMENTAL_Y2K</h3>
+                            <div class="filter-grid">
+                                <button class="filter-btn" id="btnCyber">CYBER NEON</button>
+                                <button class="filter-btn" id="btnVivid">VIVID STREET</button>
+                                <button class="filter-btn" id="btnMotion">MOTION EDIT</button>
+                                <button class="filter-btn" id="btnAvantGarde">AVANT-GARDE</button>
+                                <button class="filter-btn" id="btnDigicam">Y2K DIGICAM</button>
+                                <button class="filter-btn" id="btnAvantBlue">AVANT BLUE</button>
+                                <button class="filter-btn" id="btnStreetNature">STREET NATURE</button>
+                            </div>
+                        </div>
+                        <div class="filter-category">
+                            <h3>► GLITCH & LOW_RES</h3>
+                            <div class="filter-grid">
+                                <button class="filter-btn" id="btnLowQuality">WEBCAM 2004</button>
+                                <button class="filter-btn" id="btnAerochrome">AEROCHROME</button>
+                                <button class="filter-btn" id="btnCrt">CRT GLITCH</button>
+                                <button class="filter-btn" id="btnDreamcore">DREAMCORE</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="filter-category">
-                        <h3>► EXPERIMENTAL_Y2K</h3>
-                        <div class="filter-grid">
-                            <button class="filter-btn" id="btnCyber">CYBER NEON</button>
-                            <button class="filter-btn" id="btnVivid">VIVID STREET</button>
-                            <button class="filter-btn" id="btnMotion">MOTION EDIT</button>
-                            <button class="filter-btn" id="btnAvantGarde">AVANT-GARDE</button>
-                            <button class="filter-btn" id="btnDigicam">Y2K DIGICAM</button>
-                            <button class="filter-btn" id="btnAvantBlue">AVANT BLUE</button>
-                            <button class="filter-btn" id="btnStreetNature">STREET NATURE</button>
+                    <div class="tab-content" id="tab-film">
+                        <div class="filter-category">
+                            <h3>► REAL_FILM_STOCKS</h3>
+                            <div class="filter-grid">
+                                <button class="filter-btn" id="btnColorPlus">COLORPLUS 200</button>
+                                <button class="filter-btn" id="btnUltramax">ULTRAMAX 400</button>
+                                <button class="filter-btn" id="btnFujiC200">FUJICOLOR C200</button>
+                                <button class="filter-btn" id="btnPortra">PORTRA 400</button>
+                                <button class="filter-btn" id="btnLomo800">LOMOGRAPHY 800</button>
+                                <button class="filter-btn" id="btnIlford">ILFORD PAN 400</button>
+                            </div>
+                        </div>
+                        <div class="filter-category">
+                            <h3>► ANALOG_FILM</h3>
+                            <div class="filter-grid">
+                                <button class="filter-btn" id="btnDreamy90s">DREAMY 90S</button>
+                                <button class="filter-btn" id="btnBW">B&W 400</button>
+                                <button class="filter-btn" id="btnVintage">VINTAGE</button>
+                                <button class="filter-btn" id="btnCinematic">CINEMATIC</button>
+                                <button class="filter-btn" id="btnRetro">RETRO 80S</button>
+                                <button class="filter-btn" id="btnBlur">SOFT FOCUS</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="filter-category">
-                        <h3>► ANALOG_FILM</h3>
-                        <div class="filter-grid">
-                            <button class="filter-btn" id="btnDreamy90s">DREAMY 90S</button>
-                            <button class="filter-btn" id="btnBW">B&W 400</button>
-                            <button class="filter-btn" id="btnVintage">VINTAGE</button>
-                            <button class="filter-btn" id="btnCinematic">CINEMATIC</button>
-                            <button class="filter-btn" id="btnRetro">RETRO 80S</button>
-                            <button class="filter-btn" id="btnBlur">SOFT FOCUS</button>
+                    <div class="tab-content" id="tab-sports">
+                        <div class="filter-category">
+                            <h3>► SPORTS_ACTION</h3>
+                            <div class="filter-grid">
+                                <button class="filter-btn" id="btnSnowMotion">SNOW MOTION</button>
+                                <button class="filter-btn" id="btnGlacier">GLACIER TONE</button>
+                                <button class="filter-btn" id="btnOlympic">OLYMPIC DRAMA</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="filter-category">
-                        <h3>► SPORTS_ACTION</h3>
-                        <div class="filter-grid">
-                            <button class="filter-btn" id="btnSnowMotion">SNOW MOTION</button>
-                            <button class="filter-btn" id="btnGlacier">GLACIER TONE</button>
-                            <button class="filter-btn" id="btnOlympic">OLYMPIC DRAMA</button>
-                        </div>
-                    </div>
-
-                    <div class="filter-category">
-                        <h3>► REAL_FILM_STOCKS</h3>
-                        <div class="filter-grid">
-                            <button class="filter-btn" id="btnColorPlus">COLORPLUS 200</button>
-                            <button class="filter-btn" id="btnUltramax">ULTRAMAX 400</button>
-                            <button class="filter-btn" id="btnFujiC200">FUJICOLOR C200</button>
-                            <button class="filter-btn" id="btnPortra">PORTRA 400</button>
-                            <button class="filter-btn" id="btnLomo800">LOMOGRAPHY 800</button>
-                            <button class="filter-btn" id="btnIlford">ILFORD PAN 400</button>
-                        </div>
-                    </div>
-                    
                 </div>
-
             </div>
         </div>
     </div>
+
     <footer style="text-align: center; padding: 20px; color: #555; font-family: 'Space Mono', monospace; font-size: 0.8rem; border-top: 1px solid #333; margin-top: 40px;">
-    &copy; 2026 CYBER VO. All rights reserved.<br>
-    Created & Developed by [Thada Manpru]
-</footer>
+        &copy; 2026 CYBER VO. All rights reserved.<br>
+        Created & Developed by Thada Manpru
+    </footer>
+
 </body>
-
 </html>
-
