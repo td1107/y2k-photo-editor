@@ -555,4 +555,144 @@ function renderHalftone(dotColor) {
 }
 
 export function applyHalftoneBW() { renderHalftone('#000000'); }
+
 export function applyHalftoneColor() { renderHalftone(halftoneColor); }
+
+// ==========================================
+// คอลเลกชันใหม่: GLITCH & LOW_RES
+// ==========================================
+
+// 1. Low Quality (เว็บแคมยุค 2000s / กล้องมือถือฝาพับ แบบสมจริง)
+export function applyLowQuality() {
+    applyNormal();
+    const w = canvas.width;
+    const h = canvas.height;
+    
+    // สเตป 1: จำลองเลนส์พลาสติกราคาถูก (ภาพจะมัวและซอฟต์ลง แต่ไม่แตกเป็นบล็อก)
+    // ใช้วิธีย่อขนาดภาพลงแล้วขยายกลับ โดยเปิด Smoothing ให้มันเบลอฟุ้งๆ
+    const scale = 0.35; 
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = w * scale;
+    tempCanvas.height = h * scale;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(originalImage, 0, 0, tempCanvas.width, tempCanvas.height);
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'low';
+    ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, w, h);
+
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const data = imageData.data;
+
+    // สเตป 2: ลดคอนทราสต์ให้ภาพแบนๆ และใส่ Color Noise (นอยส์สี)
+    for (let i = 0; i < data.length; i += 4) {
+        let r = data[i], g = data[i+1], b = data[i+2];
+
+        // ลดคอนทราสต์ให้ภาพดูจืดและหมองลง
+        r = (r - 128) * 0.85 + 128 + 15;
+        g = (g - 128) * 0.85 + 128 + 10;
+        b = (b - 128) * 0.85 + 128 + 5;
+
+        // Chroma Noise: สุ่มจุดสีเพี้ยน (แดง เขียว น้ำเงิน) แบบกล้องคุณภาพต่ำ
+        let noiseR = (Math.random() - 0.5) * 35;
+        let noiseG = (Math.random() - 0.5) * 35;
+        let noiseB = (Math.random() - 0.5) * 35;
+
+        data[i] = Math.min(255, Math.max(0, r + noiseR));
+        data[i+1] = Math.min(255, Math.max(0, g + noiseG));
+        data[i+2] = Math.min(255, Math.max(0, b + noiseB));
+    }
+    ctx.putImageData(imageData, 0, 0);
+
+    // สเตป 3: Vertical Sensor Banding (วาดเส้นริ้วแนวตั้งจางๆ ซ้อนทับ)
+    // เลียนแบบข้อผิดพลาดของเซ็นเซอร์กล้องดิจิทัลยุคเก่า
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; // เส้นริ้วสีดำจางๆ
+    for (let x = 0; x < w; x += 2) {
+        if (Math.random() > 0.4) {
+            ctx.fillRect(x, 0, 1, h);
+        }
+    }
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.02)'; // เส้นริ้วสีขาวจางๆ
+    for (let x = 1; x < w; x += 3) {
+        if (Math.random() > 0.6) {
+            ctx.fillRect(x, 0, 1, h);
+        }
+    }
+}
+
+// 2. Aerochrome (ฟิล์มอินฟราเรด เปลี่ยนสีเขียวเป็นสีชมพู/แดง)
+export function applyAerochrome() {
+    applyNormal();
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        let r = data[i], g = data[i+1], b = data[i+2];
+        
+        // สมการสลับสี: เอาสีเขียวมาดันให้กลายเป็นสีแดง/ชมพู
+        let newR = (g * 1.5) + (r * 0.2); 
+        let newG = (r * 0.5) + (g * 0.2);
+        let newB = b * 0.9;
+        
+        data[i] = Math.min(255, newR);
+        data[i+1] = Math.min(255, newG);
+        data[i+2] = Math.min(255, newB);
+    }
+    ctx.putImageData(imageData, 0, 0);
+}
+
+// 3. CRT Glitch (สีเหลื่อม + จอทีวีแก้ว)
+export function applyCRT() {
+    applyNormal();
+    const w = canvas.width;
+    const h = canvas.height;
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const data = imageData.data;
+    const outputData = ctx.createImageData(w, h);
+    const out = outputData.data;
+
+    // คำนวณระยะการเหลื่อมของสี (Chromatic Aberration)
+    const offset = Math.floor(w * 0.006) * 4; 
+
+    for (let i = 0; i < data.length; i += 4) {
+        // ดึงสีแดงจากพิกเซลทางซ้าย
+        out[i] = data[i - offset] !== undefined ? data[i - offset] : data[i];
+        // สีเขียวอยู่ที่เดิม
+        out[i+1] = data[i+1];
+        // ดึงสีน้ำเงินจากพิกเซลทางขวา
+        out[i+2] = data[i + offset] !== undefined ? data[i + offset] : data[i+2];
+        out[i+3] = 255;
+    }
+    ctx.putImageData(outputData, 0, 0);
+
+    // วาดเส้นสแกนไลน์ (Scanlines) แนวนอน
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    for (let y = 0; y < h; y += 4) {
+        ctx.fillRect(0, y, w, 1);
+    }
+}
+
+// 4. Dreamcore (ออร่าฟุ้ง แสงสว่างจ้า)
+export function applyDreamcore() {
+    applyNormal();
+    
+    // สเตป 1: ดึงคอนทราสต์และสีให้ฉ่ำ
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    let factor = (259 * (20 + 255)) / (255 * (259 - 20));
+    for (let i = 0; i < data.length; i += 4) {
+        let r = data[i] * 1.1, g = data[i+1] * 1.05, b = data[i+2] * 1.15;
+        data[i] = Math.min(255, Math.max(0, factor * (r - 128) + 128));
+        data[i+1] = Math.min(255, Math.max(0, factor * (g - 128) + 128));
+        data[i+2] = Math.min(255, Math.max(0, factor * (b - 128) + 128));
+    }
+    ctx.putImageData(imageData, 0, 0);
+
+    // สเตป 2: ก๊อปปี้ภาพเดิมมาทำเบลอหนักๆ แล้วซ้อนทับด้วยโหมด Screen (เกิดแสงเรืองรอง Bloom)
+    ctx.globalCompositeOperation = 'screen';
+    ctx.filter = 'blur(15px) opacity(0.7)';
+    ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+    
+    // เคลียร์ค่ากลับเป็นปกติ
+    ctx.filter = 'none';
+    ctx.globalCompositeOperation = 'source-over';
+}
