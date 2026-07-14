@@ -129,7 +129,7 @@ bindFilter('btnAerochrome', 'applyAerochrome');
 bindFilter('btnCrt', 'applyCRT');
 bindFilter('btnDreamcore', 'applyDreamcore');
 
-// Cyberpunk & Console
+// new fil
 bindFilter('btnThermal', 'applyThermal');
 bindFilter('btnAscii', 'applyAscii');
 bindFilter('btnFisheye', 'applyFisheye');
