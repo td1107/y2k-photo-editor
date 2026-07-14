@@ -129,6 +129,12 @@ bindFilter('btnAerochrome', 'applyAerochrome');
 bindFilter('btnCrt', 'applyCRT');
 bindFilter('btnDreamcore', 'applyDreamcore');
 
+// Cyberpunk & Console
+bindFilter('btnThermal', 'applyThermal');
+bindFilter('btnAscii', 'applyAscii');
+bindFilter('btnFisheye', 'applyFisheye');
+bindFilter('btnGameboy', 'applyGameboy');
+
 // รีเซ็ตปุ่ม ORIGINAL ให้ Active เป็นค่าเริ่มต้นเมื่อโหลดเว็บ
 const btnNormal = document.getElementById('btnNormal');
 if (btnNormal) setActiveButton(btnNormal);
