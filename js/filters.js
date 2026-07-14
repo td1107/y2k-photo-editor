@@ -695,3 +695,173 @@ export function applyDreamcore() {
     ctx.filter = 'none';
     ctx.globalCompositeOperation = 'source-over';
 }
+
+// ==========================================
+// คอลเลกชันใหม่: CYBERPUNK_SYS
+// ==========================================
+
+// 1. THERMAL SCANNER (กล้องจับความร้อน)
+export function applyThermal() {
+    applyNormal();
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    for (let i = 0; i < data.length; i += 4) {
+        let lum = (data[i] * 0.3) + (data[i+1] * 0.59) + (data[i+2] * 0.11);
+        let r = 0, g = 0, b = 0;
+        
+        // ไล่สีตามความสว่าง: น้ำเงิน -> เขียว -> เหลือง -> แดง
+        if (lum < 64) { 
+            b = lum * 4; 
+        } else if (lum < 128) { 
+            g = (lum - 64) * 4; b = 255 - (lum - 64) * 4; 
+        } else if (lum < 192) { 
+            r = (lum - 128) * 4; g = 255; 
+        } else { 
+            r = 255; g = 255; b = 255 - (lum - 192) * 4; 
+        }
+        
+        data[i] = Math.min(255, r);
+        data[i+1] = Math.min(255, g);
+        data[i+2] = Math.min(255, b);
+    }
+    ctx.putImageData(imageData, 0, 0);
+}
+
+// 2. ASCII MATRIX (แปลงภาพเป็นตัวอักษรสีเขียวนีออน)
+export function applyAscii() {
+    const w = canvas.width;
+    const h = canvas.height;
+    
+    // สร้าง Canvas เล็กๆ เพื่อประมวลผลแสงเงาคร่าวๆ (ย่อภาพให้เหลือพิกเซลใหญ่ๆ)
+    const res = Math.max(8, Math.floor(w / 120)); // ขนาดตัวอักษร
+    const cols = Math.floor(w / res);
+    const rows = Math.floor(h / res);
+    
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = cols; tempCanvas.height = rows;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(originalImage, 0, 0, cols, rows);
+    const data = tempCtx.getImageData(0, 0, cols, rows).data;
+    
+    // เทพื้นหลังสีดำสนิท
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, w, h);
+    
+    // ตั้งค่าฟอนต์สีเขียวนีออน
+    ctx.fillStyle = '#39ff14';
+    ctx.font = `bold ${res}px "Space Mono", monospace`;
+    ctx.textBaseline = 'top';
+    
+    // ตัวอักษรเรียงจากมืดไปสว่าง
+    const chars = [' ', '.', ',', ':', ';', '+', '*', '?', '%', 'S', '#', '@'];
+    
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+            const i = (y * cols + x) * 4;
+            const lum = (data[i] * 0.3) + (data[i+1] * 0.59) + (data[i+2] * 0.11);
+            const charIndex = Math.floor((lum / 255) * (chars.length - 1));
+            
+            // วาดตัวอักษรลงไปแทนที่รูปภาพ
+            if (lum > 20) { // ละเว้นจุดที่มืดมากๆ
+                ctx.fillText(chars[charIndex], x * res, y * res);
+            }
+        }
+    }
+}
+
+// 3. FISHEYE CAM (เลนส์ตาปลา 90s)
+export function applyFisheye() {
+    applyNormal();
+    const w = canvas.width;
+    const h = canvas.height;
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const srcData = new Uint8ClampedArray(imageData.data); // ก๊อปปี้ข้อมูลภาพเดิมไว้
+    const dstData = imageData.data;
+    
+    const cx = w / 2;
+    const cy = h / 2;
+    const maxRadius = Math.sqrt(cx * cx + cy * cy);
+    const strength = 0.6; // ความนูนของเลนส์
+    
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            let dx = x - cx;
+            let dy = y - cy;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            let r = distance / maxRadius;
+            
+            let theta = 1;
+            if (r !== 0) {
+                theta = Math.atan(r * strength) / (r * Math.atan(strength));
+            }
+            
+            let srcX = Math.round(cx + dx * theta);
+            let srcY = Math.round(cy + dy * theta);
+            let dstIdx = (y * w + x) * 4;
+            
+            // ดึงพิกเซลมาบิดเบี้ยว ถ้าหลุดขอบให้เป็นสีดำ
+            if (srcX >= 0 && srcX < w && srcY >= 0 && srcY < h) {
+                let srcIdx = (srcY * w + srcX) * 4;
+                dstData[dstIdx] = srcData[srcIdx];
+                dstData[dstIdx+1] = srcData[srcIdx+1];
+                dstData[dstIdx+2] = srcData[srcIdx+2];
+                dstData[dstIdx+3] = srcData[srcIdx+3];
+            } else {
+                dstData[dstIdx] = 0; dstData[dstIdx+1] = 0; dstData[dstIdx+2] = 0; 
+            }
+        }
+    }
+    ctx.putImageData(imageData, 0, 0);
+    
+    // ใส่ขอบมืด (Vignette) ให้เหมือนเลนส์กล้อง
+    let gradient = ctx.createRadialGradient(cx, cy, maxRadius * 0.45, cx, cy, maxRadius * 0.9);
+    gradient.addColorStop(0, 'rgba(0,0,0,0)');
+    gradient.addColorStop(1, 'rgba(0,0,0,1)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, w, h);
+}
+
+// 4. GAMEBOY CAMERA (ภาพ 8-bit สีเขียว 4 เฉด)
+export function applyGameboy() {
+    applyNormal();
+    const w = canvas.width;
+    const h = canvas.height;
+    
+    // ทำให้ภาพแตกเป็นพิกเซลบล็อก (Pixelate)
+    const scale = 0.15; // ยิ่งน้อย ภาพยิ่งบล็อกใหญ่
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = w * scale; tempCanvas.height = h * scale;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(originalImage, 0, 0, tempCanvas.width, tempCanvas.height);
+    
+    ctx.imageSmoothingEnabled = false; // ปิดการลบรอยหยัก
+    ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, w, h);
+    ctx.imageSmoothingEnabled = true;
+
+    const imageData = ctx.getImageData(0, 0, w, h);
+    const data = imageData.data;
+    
+    // ชุดสีคลาสสิกของเครื่อง Gameboy (เขียวเข้มสุด ไป เขียวอ่อนสุด)
+    const gbPalette = [
+        [15, 56, 15],   // มืดสุด
+        [48, 98, 48],   // มืด
+        [139, 172, 15], // สว่าง
+        [155, 188, 15]  // สว่างสุด
+    ];
+    
+    for (let i = 0; i < data.length; i += 4) {
+        let lum = (data[i] * 0.3) + (data[i+1] * 0.59) + (data[i+2] * 0.11);
+        let color;
+        
+        // แบ่งระดับความสว่างให้ตรงกับสี 4 เฉด
+        if (lum < 64) color = gbPalette[0];
+        else if (lum < 128) color = gbPalette[1];
+        else if (lum < 192) color = gbPalette[2];
+        else color = gbPalette[3];
+        
+        data[i] = color[0]; 
+        data[i+1] = color[1]; 
+        data[i+2] = color[2];
+    }
+    ctx.putImageData(imageData, 0, 0);
+}
